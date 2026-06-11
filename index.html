@@ -17,8 +17,6 @@
     --ink: #2C1F14;
     --red-wax: #8B2E2E;
     --sage: #6B7C5C;
-    --dusty-rose: #B07080;
-    --envelope-back: #DDD0B3;
     --envelope-shadow: rgba(74,55,40,0.15);
   }
 
@@ -33,10 +31,7 @@
     padding: 2rem 1rem 4rem;
   }
 
-  header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
+  header { text-align: center; margin-bottom: 2.5rem; }
 
   header h1 {
     font-family: 'DM Serif Display', serif;
@@ -55,18 +50,53 @@
     text-transform: uppercase;
   }
 
-  .month-label {
-    display: inline-block;
+  /* Month navigator */
+  .month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 0.8rem;
+  }
+
+  .month-nav button {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--tan);
+    background: var(--cream);
+    color: var(--brown);
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .month-nav button:hover { background: var(--tan); color: var(--dark-brown); }
+
+  .month-selectors {
+    display: flex;
+    gap: 6px;
+  }
+
+  .month-selectors select {
     font-family: 'Caveat', cursive;
     font-size: 1.1rem;
     color: var(--brown);
     background: var(--cream);
     border: 1px solid var(--tan);
     border-radius: 4px;
-    padding: 2px 14px;
-    margin-top: 0.6rem;
+    padding: 2px 6px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    text-align: center;
   }
 
+  .month-selectors select:focus { border-color: var(--brown); }
+
+  /* Summary bar */
   .summary-bar {
     max-width: 900px;
     margin: 0 auto 2.5rem;
@@ -80,9 +110,7 @@
     flex-wrap: wrap;
   }
 
-  .summary-item {
-    text-align: center;
-  }
+  .summary-item { text-align: center; }
 
   .summary-item .label {
     font-size: 0.7rem;
@@ -102,6 +130,7 @@
   .summary-item .val.spent { color: var(--red-wax); }
   .summary-item .val.left { color: var(--sage); }
 
+  /* Grid */
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -119,7 +148,6 @@
   .envelope {
     position: relative;
     width: 100%;
-    padding-bottom: 0;
     background: var(--cream);
     border-radius: 4px 4px 6px 6px;
     box-shadow: 0 2px 8px var(--envelope-shadow), 0 1px 2px rgba(74,55,40,0.08);
@@ -138,11 +166,7 @@
     overflow: hidden;
   }
 
-  .envelope-flap svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
+  .envelope-flap svg { width: 100%; height: 100%; display: block; }
 
   .envelope-body {
     padding: 0.75rem 1rem 1rem;
@@ -154,14 +178,6 @@
     position: relative;
   }
 
-  .envelope-body::before {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, var(--tan) 0%, transparent 50%, var(--tan) 100%);
-  }
-
   .envelope-category {
     font-family: 'Caveat', cursive;
     font-size: 1.3rem;
@@ -171,11 +187,6 @@
     display: flex;
     align-items: center;
     gap: 6px;
-  }
-
-  .envelope-category .cat-icon {
-    font-size: 1.1rem;
-    opacity: 0.7;
   }
 
   .budget-display {
@@ -195,11 +206,7 @@
   .budget-remaining.low { color: var(--red-wax); }
   .budget-remaining.medium { color: #8B6F2E; }
 
-  .budget-of {
-    font-size: 0.8rem;
-    color: var(--brown);
-    font-weight: 300;
-  }
+  .budget-of { font-size: 0.8rem; color: var(--brown); font-weight: 300; }
 
   .progress-track {
     height: 5px;
@@ -219,10 +226,7 @@
   .progress-fill.medium { background: #B09030; }
   .progress-fill.low { background: var(--red-wax); }
 
-  .envelope-actions {
-    display: flex;
-    gap: 6px;
-  }
+  .envelope-actions { display: flex; gap: 6px; }
 
   .btn-action {
     flex: 1;
@@ -250,6 +254,16 @@
 
   .btn-action.primary:hover { background: var(--ink); }
 
+  .btn-action.danger {
+    background: transparent;
+    color: var(--red-wax);
+    border-color: rgba(139,46,46,0.3);
+    flex: 0;
+    padding: 5px 8px;
+  }
+
+  .btn-action.danger:hover { background: rgba(139,46,46,0.08); }
+
   .wax-seal {
     position: absolute;
     top: -12px;
@@ -266,7 +280,59 @@
     border: 2px solid rgba(255,255,255,0.3);
   }
 
-  /* Modal */
+  .stamp {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    width: 36px;
+    height: 36px;
+    border: 2px dashed rgba(255,255,255,0.3);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  /* Add envelope card */
+  .add-envelope-card {
+    border: 2px dashed var(--tan);
+    border-radius: 8px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--brown);
+    transition: border-color 0.2s, background 0.2s;
+    background: rgba(245,240,232,0.5);
+  }
+
+  .add-envelope-card:hover {
+    border-color: var(--brown);
+    background: var(--cream);
+  }
+
+  .add-envelope-card .plus {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.5rem;
+    color: var(--tan);
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  .add-envelope-card:hover .plus { color: var(--brown); }
+
+  .add-envelope-card span {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+
+  /* Modals */
   .modal-backdrop {
     display: none;
     position: fixed;
@@ -286,6 +352,8 @@
     padding: 1.75rem;
     width: min(420px, 92vw);
     box-shadow: 0 8px 32px rgba(44,31,20,0.25);
+    max-height: 90vh;
+    overflow-y: auto;
   }
 
   .modal h2 {
@@ -301,9 +369,7 @@
     margin-bottom: 1.25rem;
   }
 
-  .field {
-    margin-bottom: 1rem;
-  }
+  .field { margin-bottom: 1rem; }
 
   .field label {
     display: block;
@@ -315,7 +381,7 @@
     font-weight: 500;
   }
 
-  .field input, .field textarea {
+  .field input, .field select {
     width: 100%;
     padding: 8px 10px;
     border: 1px solid var(--tan);
@@ -328,7 +394,7 @@
     transition: border-color 0.15s;
   }
 
-  .field input:focus, .field textarea:focus { border-color: var(--brown); }
+  .field input:focus, .field select:focus { border-color: var(--brown); }
 
   .modal-actions {
     display: flex;
@@ -377,7 +443,47 @@
 
   .history-item:last-child { border-bottom: none; }
   .history-item .amount { color: var(--red-wax); font-weight: 500; }
-  .history-item .amount.refund { color: var(--sage); }
+
+  /* Color picker swatches */
+  .color-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .color-swatch {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+
+  .color-swatch:hover { transform: scale(1.15); }
+  .color-swatch.selected { border-color: var(--ink); transform: scale(1.15); }
+
+  /* Icon picker */
+  .icon-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .icon-opt {
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    border: 1px solid var(--tan);
+    background: white;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .icon-opt:hover { background: var(--parchment); }
+  .icon-opt.selected { background: var(--dark-brown); border-color: var(--dark-brown); }
 
   .toast {
     position: fixed;
@@ -395,33 +501,6 @@
   }
 
   .toast.show { transform: translateX(-50%) translateY(0); }
-
-  .stamp {
-    position: absolute;
-    top: 10px;
-    left: 12px;
-    width: 36px;
-    height: 36px;
-    border: 2px dashed var(--tan);
-    border-radius: 3px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    opacity: 0.6;
-  }
-
-  .add-expense-link {
-    position: absolute;
-    top: 10px;
-    left: 12px;
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--brown);
-    opacity: 0.6;
-    font-weight: 500;
-  }
 </style>
 </head>
 <body>
@@ -429,7 +508,14 @@
 <header>
   <h1>My Envelopes</h1>
   <p>Monthly Budget</p>
-  <div class="month-label" id="month-label"></div>
+  <div class="month-nav">
+    <button id="prev-month" title="Previous month">&#8249;</button>
+    <div class="month-selectors">
+      <select id="month-select"></select>
+      <select id="year-select"></select>
+    </div>
+    <button id="next-month" title="Next month">&#8250;</button>
+  </div>
 </header>
 
 <div class="summary-bar">
@@ -449,6 +535,7 @@
 
 <div class="grid" id="grid"></div>
 
+<!-- Expense / set budget modal -->
 <div class="modal-backdrop" id="modal">
   <div class="modal">
     <h2 id="modal-title">Envelope</h2>
@@ -459,110 +546,120 @@
   </div>
 </div>
 
+<!-- Add envelope modal -->
+<div class="modal-backdrop" id="add-modal">
+  <div class="modal">
+    <h2>New Envelope</h2>
+    <p class="sub">Create a custom spending category</p>
+    <div class="field">
+      <label>Name</label>
+      <input type="text" id="new-name" placeholder="e.g. Pet Care" maxlength="30" />
+    </div>
+    <div class="field">
+      <label>Icon</label>
+      <div class="icon-grid" id="icon-grid"></div>
+    </div>
+    <div class="field">
+      <label>Color</label>
+      <div class="color-grid" id="color-grid"></div>
+    </div>
+    <div class="modal-actions">
+      <button onclick="closeAddModal()">Cancel</button>
+      <button class="confirm" onclick="confirmAddEnvelope()">Create Envelope</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-const ENVELOPES = [
-  { id: 'groceries',   label: 'Groceries',           icon: '🛒', color: '#6B7C5C', seal: '#8B2E2E' },
-  { id: 'eating_out',  label: 'Eating Out',           icon: '🍽️', color: '#8B6F47', seal: '#4A3728' },
-  { id: 'rent',        label: 'Rent',                 icon: '🏠', color: '#4A3728', seal: '#6B7C5C' },
-  { id: 'train',       label: 'Train',                icon: '🚆', color: '#3D5A80', seal: '#8B6F47' },
-  { id: 'utilities',   label: 'Utilities & Internet', icon: '💡', color: '#6B5A2E', seal: '#3D5A80' },
-  { id: 'investing',   label: 'Investing',            icon: '📈', color: '#2E5A40', seal: '#8B2E2E' },
-  { id: 'uber',        label: 'Uber / Lyft',          icon: '🚗', color: '#5A3D5A', seal: '#2E5A40' },
-  { id: 'clothing',    label: 'Clothing',             icon: '👗', color: '#8B4A5A', seal: '#5A3D5A' },
-  { id: 'drinks',      label: 'Drinks',               icon: '🍷', color: '#7A2E3D', seal: '#8B4A5A' },
-  { id: 'fun',         label: 'Fun Money',            icon: '✨', color: '#5A4A2E', seal: '#7A2E3D' },
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+const PALETTE_COLORS = [
+  '#6B7C5C','#4A3728','#3D5A80','#6B5A2E','#2E5A40',
+  '#5A3D5A','#8B4A5A','#7A2E3D','#5A4A2E','#8B6F47',
+  '#4A6B6B','#6B4A3D','#3D4A6B','#6B6B4A','#4A3D6B'
 ];
 
-const KEY = 'envelope_budget_v2';
-let state = load();
+const SEAL_FOR_COLOR = {
+  '#6B7C5C':'#8B2E2E','#4A3728':'#6B7C5C','#3D5A80':'#8B6F47',
+  '#6B5A2E':'#3D5A80','#2E5A40':'#8B2E2E','#5A3D5A':'#2E5A40',
+  '#8B4A5A':'#5A3D5A','#7A2E3D':'#8B4A5A','#5A4A2E':'#7A2E3D',
+  '#8B6F47':'#4A3728','#4A6B6B':'#8B6F47','#6B4A3D':'#4A6B6B',
+  '#3D4A6B':'#6B4A3D','#6B6B4A':'#3D4A6B','#4A3D6B':'#6B6B4A'
+};
 
-function load() {
+const ICONS = ['🛒','🍽️','🏠','🚆','💡','📈','🚗','👗','🍷','✨','🐾','💊','✈️','🎮','📚','☕','🎬','🏋️','🎁','🌿','🧴','🎵','🏖️','🍕','💻'];
+
+const DEFAULT_ENVELOPES = [
+  { id: 'groceries',   label: 'Groceries',           icon: '🛒', color: '#6B7C5C' },
+  { id: 'eating_out',  label: 'Eating Out',           icon: '🍽️', color: '#8B6F47' },
+  { id: 'rent',        label: 'Rent',                 icon: '🏠', color: '#4A3728' },
+  { id: 'train',       label: 'Train',                icon: '🚆', color: '#3D5A80' },
+  { id: 'utilities',   label: 'Utilities & Internet', icon: '💡', color: '#6B5A2E' },
+  { id: 'investing',   label: 'Investing',            icon: '📈', color: '#2E5A40' },
+  { id: 'uber',        label: 'Uber / Lyft',          icon: '🚗', color: '#5A3D5A' },
+  { id: 'clothing',    label: 'Clothing',             icon: '👗', color: '#8B4A5A' },
+  { id: 'drinks',      label: 'Drinks',               icon: '🍷', color: '#7A2E3D' },
+  { id: 'fun',         label: 'Fun Money',            icon: '✨', color: '#5A4A2E' },
+];
+
+const KEY = 'envelope_budget_v3';
+
+// State: { envelopeDefs: [...], months: { 'YYYY-MM': { envelopeId: { budget, spent, history } } } }
+let state = loadState();
+
+// Current month/year
+const now = new Date();
+let curYear = now.getFullYear();
+let curMonth = now.getMonth(); // 0-indexed
+
+function monthKey() { return `${curYear}-${String(curMonth+1).padStart(2,'0')}`; }
+
+function loadState() {
   try {
     const s = JSON.parse(localStorage.getItem(KEY));
-    if (s && s.envelopes) return s;
+    if (s && s.envelopeDefs && s.months) return s;
   } catch(e) {}
-  return {
-    envelopes: Object.fromEntries(ENVELOPES.map(e => [e.id, { budget: 0, spent: 0, history: [] }]))
-  };
+  return { envelopeDefs: DEFAULT_ENVELOPES.map(e => ({...e})), months: {} };
 }
 
 function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
 
-function fmt(n) { return '$' + Math.abs(n).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+function ensureMonth(mk) {
+  if (!state.months[mk]) state.months[mk] = {};
+  state.envelopeDefs.forEach(e => {
+    if (!state.months[mk][e.id]) {
+      // Copy budget from most recent prior month if available
+      const priorBudget = getMostRecentBudget(e.id, mk);
+      state.months[mk][e.id] = { budget: priorBudget, spent: 0, history: [] };
+    }
+  });
+}
 
-function getColor(remaining, budget) {
-  if (budget === 0) return 'good';
+function getMostRecentBudget(envId, currentMk) {
+  const keys = Object.keys(state.months).filter(k => k < currentMk).sort().reverse();
+  for (const k of keys) {
+    if (state.months[k][envId] && state.months[k][envId].budget > 0)
+      return state.months[k][envId].budget;
+  }
+  return 0;
+}
+
+function getMonthData() {
+  const mk = monthKey();
+  ensureMonth(mk);
+  return state.months[mk];
+}
+
+function fmt(n) { return '$' + Math.abs(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+function getColorClass(remaining, budget) {
+  if (budget === 0) return '';
   const pct = remaining / budget;
   if (pct <= 0.2) return 'low';
   if (pct <= 0.5) return 'medium';
-  return 'good';
-}
-
-function updateSummary() {
-  let totalBudget = 0, totalSpent = 0;
-  ENVELOPES.forEach(e => {
-    const d = state.envelopes[e.id];
-    totalBudget += d.budget;
-    totalSpent += d.spent;
-  });
-  document.getElementById('sum-budget').textContent = fmt(totalBudget);
-  document.getElementById('sum-spent').textContent = fmt(totalSpent);
-  const rem = totalBudget - totalSpent;
-  document.getElementById('sum-remaining').textContent = fmt(rem);
-}
-
-function renderGrid() {
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
-
-  ENVELOPES.forEach(env => {
-    const d = state.envelopes[env.id];
-    const remaining = d.budget - d.spent;
-    const pct = d.budget > 0 ? Math.min(1, Math.max(0, remaining / d.budget)) : 1;
-    const colorClass = getColor(remaining, d.budget);
-
-    const wrap = document.createElement('div');
-    wrap.className = 'envelope-wrap';
-
-    const flapColor = env.color;
-    const flapLight = lighten(env.color, 0.25);
-
-    wrap.innerHTML = `
-      <div class="envelope">
-        <div class="envelope-flap">
-          <svg viewBox="0 0 260 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-            <rect width="260" height="80" fill="${flapColor}" rx="4"/>
-            <polygon points="0,0 260,0 130,52" fill="${flapLight}" opacity="0.55"/>
-            <line x1="0" y1="0" x2="130" y2="52" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-            <line x1="260" y1="0" x2="130" y2="52" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-          </svg>
-          <div class="stamp">${env.icon}</div>
-        </div>
-        <div class="wax-seal" style="background:${env.seal}; color:#F5F0E8;">✉</div>
-        <div class="envelope-body">
-          <div class="envelope-category">
-            <span>${env.label}</span>
-          </div>
-          <div class="budget-display">
-            <span class="budget-remaining ${colorClass}">${fmt(remaining)}</span>
-            <span class="budget-of">of ${fmt(d.budget)}</span>
-          </div>
-          <div class="progress-track">
-            <div class="progress-fill ${colorClass}" style="width:${(pct*100).toFixed(1)}%"></div>
-          </div>
-          <div class="envelope-actions">
-            <button class="btn-action" onclick="openSet('${env.id}')">Set Budget</button>
-            <button class="btn-action primary" onclick="openSpend('${env.id}')">Add Expense</button>
-          </div>
-        </div>
-      </div>
-    `;
-    grid.appendChild(wrap);
-  });
-
-  updateSummary();
+  return '';
 }
 
 function lighten(hex, amt) {
@@ -573,38 +670,151 @@ function lighten(hex, amt) {
   return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
 }
 
+function sealFor(color) {
+  return SEAL_FOR_COLOR[color] || '#8B2E2E';
+}
+
+// ---- Month selector ----
+function buildMonthSelectors() {
+  const ms = document.getElementById('month-select');
+  const ys = document.getElementById('year-select');
+  ms.innerHTML = MONTHS.map((m,i) => `<option value="${i}" ${i===curMonth?'selected':''}>${m}</option>`).join('');
+  const startYear = Math.min(curYear - 2, now.getFullYear() - 2);
+  const endYear = Math.max(curYear + 2, now.getFullYear() + 2);
+  ys.innerHTML = '';
+  for (let y = startYear; y <= endYear; y++) {
+    const opt = document.createElement('option');
+    opt.value = y; opt.textContent = y;
+    if (y === curYear) opt.selected = true;
+    ys.appendChild(opt);
+  }
+}
+
+document.getElementById('month-select').addEventListener('change', function() {
+  curMonth = parseInt(this.value);
+  renderAll();
+});
+
+document.getElementById('year-select').addEventListener('change', function() {
+  curYear = parseInt(this.value);
+  renderAll();
+});
+
+document.getElementById('prev-month').addEventListener('click', () => {
+  curMonth--;
+  if (curMonth < 0) { curMonth = 11; curYear--; }
+  buildMonthSelectors();
+  renderAll();
+});
+
+document.getElementById('next-month').addEventListener('click', () => {
+  curMonth++;
+  if (curMonth > 11) { curMonth = 0; curYear++; }
+  buildMonthSelectors();
+  renderAll();
+});
+
+// ---- Grid ----
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  const data = getMonthData();
+
+  state.envelopeDefs.forEach(env => {
+    const d = data[env.id];
+    const remaining = d.budget - d.spent;
+    const pct = d.budget > 0 ? Math.min(1, Math.max(0, remaining / d.budget)) : 1;
+    const cc = getColorClass(remaining, d.budget);
+    const flapLight = lighten(env.color, 0.25);
+    const seal = sealFor(env.color);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'envelope-wrap';
+    wrap.innerHTML = `
+      <div class="envelope">
+        <div class="envelope-flap">
+          <svg viewBox="0 0 260 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <rect width="260" height="80" fill="${env.color}" rx="4"/>
+            <polygon points="0,0 260,0 130,52" fill="${flapLight}" opacity="0.55"/>
+            <line x1="0" y1="0" x2="130" y2="52" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+            <line x1="260" y1="0" x2="130" y2="52" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          </svg>
+          <div class="stamp">${env.icon}</div>
+        </div>
+        <div class="wax-seal" style="background:${seal}; color:#F5F0E8;">✉</div>
+        <div class="envelope-body">
+          <div class="envelope-category"><span>${env.label}</span></div>
+          <div class="budget-display">
+            <span class="budget-remaining ${cc}">${fmt(remaining)}</span>
+            <span class="budget-of">of ${fmt(d.budget)}</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill ${cc}" style="width:${(pct*100).toFixed(1)}%"></div>
+          </div>
+          <div class="envelope-actions">
+            <button class="btn-action" onclick="openSet('${env.id}')">Set Budget</button>
+            <button class="btn-action primary" onclick="openSpend('${env.id}')">Add Expense</button>
+            ${env._custom ? `<button class="btn-action danger" onclick="deleteEnvelope('${env.id}')" title="Delete">✕</button>` : ''}
+          </div>
+        </div>
+      </div>`;
+    grid.appendChild(wrap);
+  });
+
+  // Add envelope card
+  const addCard = document.createElement('div');
+  addCard.className = 'add-envelope-card';
+  addCard.onclick = openAddModal;
+  addCard.innerHTML = `<div class="plus">+</div><span>New Envelope</span>`;
+  grid.appendChild(addCard);
+
+  updateSummary(data);
+}
+
+function updateSummary(data) {
+  let totalBudget = 0, totalSpent = 0;
+  state.envelopeDefs.forEach(e => {
+    if (data[e.id]) {
+      totalBudget += data[e.id].budget;
+      totalSpent += data[e.id].spent;
+    }
+  });
+  document.getElementById('sum-budget').textContent = fmt(totalBudget);
+  document.getElementById('sum-spent').textContent = fmt(totalSpent);
+  document.getElementById('sum-remaining').textContent = fmt(totalBudget - totalSpent);
+}
+
+function renderAll() {
+  buildMonthSelectors();
+  renderGrid();
+}
+
+// ---- Expense modal ----
 let currentEnv = null;
 
 function openSet(id) {
   currentEnv = id;
-  const env = ENVELOPES.find(e => e.id === id);
-  const d = state.envelopes[id];
+  const env = state.envelopeDefs.find(e => e.id === id);
+  const d = getMonthData()[id];
   setModal(
     `Set Budget — ${env.label}`,
-    `Current budget: ${fmt(d.budget)}`,
+    `${MONTHS[curMonth]} ${curYear}`,
     `<div class="field"><label>Monthly Budget ($)</label><input type="number" id="modal-input" placeholder="0.00" value="${d.budget || ''}" min="0" step="0.01" /></div>`,
-    [
-      { label: 'Cancel', cls: '', action: closeModal },
-      { label: 'Save', cls: 'confirm', action: confirmSet }
-    ],
+    [{ label: 'Cancel', cls: '', action: closeModal }, { label: 'Save', cls: 'confirm', action: confirmSet }],
     null
   );
 }
 
 function openSpend(id) {
   currentEnv = id;
-  const env = ENVELOPES.find(e => e.id === id);
-  const d = state.envelopes[id];
-  const remaining = d.budget - d.spent;
+  const env = state.envelopeDefs.find(e => e.id === id);
+  const d = getMonthData()[id];
   setModal(
     `${env.icon} ${env.label}`,
-    `Remaining: ${fmt(remaining)}`,
+    `${MONTHS[curMonth]} ${curYear} · Remaining: ${fmt(d.budget - d.spent)}`,
     `<div class="field"><label>Amount ($)</label><input type="number" id="modal-input" placeholder="0.00" min="0.01" step="0.01" /></div>
      <div class="field"><label>Note (optional)</label><input type="text" id="modal-note" placeholder="e.g. Whole Foods run" /></div>`,
-    [
-      { label: 'Cancel', cls: '', action: closeModal },
-      { label: 'Add Expense', cls: 'confirm', action: confirmSpend }
-    ],
+    [{ label: 'Cancel', cls: '', action: closeModal }, { label: 'Add Expense', cls: 'confirm', action: confirmSpend }],
     d.history
   );
 }
@@ -618,21 +828,20 @@ function setModal(title, sub, bodyHTML, actions, history) {
   actDiv.innerHTML = '';
   actions.forEach(a => {
     const btn = document.createElement('button');
-    btn.textContent = a.label;
-    btn.className = a.cls;
-    btn.onclick = a.action;
+    btn.textContent = a.label; btn.className = a.cls; btn.onclick = a.action;
     actDiv.appendChild(btn);
   });
 
   const histDiv = document.getElementById('modal-history');
   if (history && history.length > 0) {
     histDiv.style.display = 'block';
-    histDiv.innerHTML = history.slice().reverse().map(h =>
-      `<div class="history-item">
-        <span>${h.note || 'Expense'} <span style="opacity:0.5;font-size:0.7rem">${h.date}</span></span>
-        <span class="amount ${h.amount < 0 ? 'refund' : ''}">${h.amount < 0 ? '+' : '-'}${fmt(Math.abs(h.amount))}</span>
-      </div>`
-    ).join('');
+    histDiv.innerHTML = `<div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--brown);margin-bottom:6px;font-weight:500">Recent expenses</div>` +
+      history.slice().reverse().map(h =>
+        `<div class="history-item">
+          <span>${h.note || 'Expense'} <span style="opacity:0.5;font-size:0.7rem">${h.date}</span></span>
+          <span class="amount">-${fmt(h.amount)}</span>
+        </div>`
+      ).join('');
   } else {
     histDiv.style.display = 'none';
     histDiv.innerHTML = '';
@@ -650,7 +859,7 @@ function closeModal() {
 function confirmSet() {
   const val = parseFloat(document.getElementById('modal-input').value);
   if (isNaN(val) || val < 0) { showToast('Please enter a valid amount.'); return; }
-  state.envelopes[currentEnv].budget = Math.round(val * 100) / 100;
+  getMonthData()[currentEnv].budget = Math.round(val * 100) / 100;
   save(); renderGrid(); closeModal();
   showToast('Budget updated!');
 }
@@ -660,21 +869,78 @@ function confirmSpend() {
   if (isNaN(val) || val <= 0) { showToast('Please enter a valid amount.'); return; }
   const note = (document.getElementById('modal-note').value || '').trim();
   const amount = Math.round(val * 100) / 100;
-  state.envelopes[currentEnv].spent = Math.round((state.envelopes[currentEnv].spent + amount) * 100) / 100;
-  state.envelopes[currentEnv].history.push({
-    amount,
-    note: note || 'Expense',
-    date: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'})
-  });
+  const d = getMonthData()[currentEnv];
+  d.spent = Math.round((d.spent + amount) * 100) / 100;
+  d.history.push({ amount, note: note || 'Expense', date: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'}) });
   save(); renderGrid(); closeModal();
   showToast('Expense logged!');
 }
 
-document.getElementById('modal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
+document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+// ---- Add envelope modal ----
+let selectedIcon = ICONS[0];
+let selectedColor = PALETTE_COLORS[0];
+
+function openAddModal() {
+  selectedIcon = ICONS[0];
+  selectedColor = PALETTE_COLORS[0];
+  document.getElementById('new-name').value = '';
+
+  // Build icon grid
+  const ig = document.getElementById('icon-grid');
+  ig.innerHTML = ICONS.map(ic =>
+    `<div class="icon-opt ${ic === selectedIcon ? 'selected' : ''}" onclick="selectIcon(this,'${ic}')">${ic}</div>`
+  ).join('');
+
+  // Build color grid
+  const cg = document.getElementById('color-grid');
+  cg.innerHTML = PALETTE_COLORS.map(c =>
+    `<div class="color-swatch ${c === selectedColor ? 'selected' : ''}" style="background:${c}" onclick="selectColor(this,'${c}')" title="${c}"></div>`
+  ).join('');
+
+  document.getElementById('add-modal').classList.add('open');
+  setTimeout(() => document.getElementById('new-name').focus(), 50);
+}
+
+function closeAddModal() { document.getElementById('add-modal').classList.remove('open'); }
+
+function selectIcon(el, icon) {
+  selectedIcon = icon;
+  document.querySelectorAll('.icon-opt').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectColor(el, color) {
+  selectedColor = color;
+  document.querySelectorAll('.color-swatch').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function confirmAddEnvelope() {
+  const name = document.getElementById('new-name').value.trim();
+  if (!name) { showToast('Please enter a name.'); return; }
+  const id = 'custom_' + Date.now();
+  state.envelopeDefs.push({ id, label: name, icon: selectedIcon, color: selectedColor, _custom: true });
+  // Add to current month data
+  const mk = monthKey();
+  ensureMonth(mk);
+  state.months[mk][id] = { budget: 0, spent: 0, history: [] };
+  save(); renderGrid(); closeAddModal();
+  showToast(`"${name}" envelope created!`);
+}
+
+function deleteEnvelope(id) {
+  const env = state.envelopeDefs.find(e => e.id === id);
+  if (!confirm(`Delete "${env.label}" envelope? All data for this envelope will be removed.`)) return;
+  state.envelopeDefs = state.envelopeDefs.filter(e => e.id !== id);
+  Object.values(state.months).forEach(m => { delete m[id]; });
+  save(); renderGrid();
+  showToast('Envelope deleted.');
+}
+
+document.getElementById('add-modal').addEventListener('click', function(e) { if (e.target === this) closeAddModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeAddModal(); } });
 
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -683,13 +949,8 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-function setMonthLabel() {
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const now = new Date();
-  document.getElementById('month-label').textContent = `${months[now.getMonth()]} ${now.getFullYear()}`;
-}
-
-setMonthLabel();
+// ---- Init ----
+buildMonthSelectors();
 renderGrid();
 </script>
 </body>
