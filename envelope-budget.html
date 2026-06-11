@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Envelope Budget</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F5F0E8;
+    --parchment: #EDE5D0;
+    --tan: #D4C4A0;
+    --brown: #8B6F47;
+    --dark-brown: #4A3728;
+    --ink: #2C1F14;
+    --red-wax: #8B2E2E;
+    --sage: #6B7C5C;
+    --dusty-rose: #B07080;
+    --envelope-back: #DDD0B3;
+    --envelope-shadow: rgba(74,55,40,0.15);
+  }
+
+  body {
+    background-color: #EDE5D0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(180,160,120,0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(160,140,100,0.1) 0%, transparent 50%);
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    padding: 2rem 1rem 4rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--dark-brown);
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+
+  header p {
+    font-size: 0.9rem;
+    color: var(--brown);
+    margin-top: 0.4rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .month-label {
+    display: inline-block;
+    font-family: 'Caveat', cursive;
+    font-size: 1.1rem;
+    color: var(--brown);
+    background: var(--cream);
+    border: 1px solid var(--tan);
+    border-radius: 4px;
+    padding: 2px 14px;
+    margin-top: 0.6rem;
+  }
+
+  .summary-bar {
+    max-width: 900px;
+    margin: 0 auto 2.5rem;
+    background: var(--cream);
+    border: 1px solid var(--tan);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .summary-item {
+    text-align: center;
+  }
+
+  .summary-item .label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--brown);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .summary-item .val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--dark-brown);
+  }
+
+  .summary-item .val.spent { color: var(--red-wax); }
+  .summary-item .val.left { color: var(--sage); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .envelope-wrap {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .envelope {
+    position: relative;
+    width: 100%;
+    padding-bottom: 0;
+    background: var(--cream);
+    border-radius: 4px 4px 6px 6px;
+    box-shadow: 0 2px 8px var(--envelope-shadow), 0 1px 2px rgba(74,55,40,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .envelope-wrap:hover .envelope {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px var(--envelope-shadow), 0 2px 4px rgba(74,55,40,0.1);
+  }
+
+  .envelope-flap {
+    position: relative;
+    width: 100%;
+    height: 80px;
+    overflow: hidden;
+  }
+
+  .envelope-flap svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .envelope-body {
+    padding: 0.75rem 1rem 1rem;
+    background: var(--cream);
+    border-left: 1px solid var(--tan);
+    border-right: 1px solid var(--tan);
+    border-bottom: 1px solid var(--tan);
+    border-radius: 0 0 6px 6px;
+    position: relative;
+  }
+
+  .envelope-body::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--tan) 0%, transparent 50%, var(--tan) 100%);
+  }
+
+  .envelope-category {
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--dark-brown);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .envelope-category .cat-icon {
+    font-size: 1.1rem;
+    opacity: 0.7;
+  }
+
+  .budget-display {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 0.6rem;
+  }
+
+  .budget-remaining {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    color: var(--dark-brown);
+    line-height: 1;
+  }
+
+  .budget-remaining.low { color: var(--red-wax); }
+  .budget-remaining.medium { color: #8B6F2E; }
+
+  .budget-of {
+    font-size: 0.8rem;
+    color: var(--brown);
+    font-weight: 300;
+  }
+
+  .progress-track {
+    height: 5px;
+    background: var(--tan);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 0.4rem 0 0.75rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--sage);
+    transition: width 0.4s ease;
+  }
+
+  .progress-fill.medium { background: #B09030; }
+  .progress-fill.low { background: var(--red-wax); }
+
+  .envelope-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .btn-action {
+    flex: 1;
+    padding: 5px 0;
+    font-size: 0.72rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid var(--tan);
+    background: var(--parchment);
+    color: var(--brown);
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .btn-action:hover { background: var(--tan); color: var(--dark-brown); }
+
+  .btn-action.primary {
+    background: var(--dark-brown);
+    color: var(--cream);
+    border-color: var(--dark-brown);
+  }
+
+  .btn-action.primary:hover { background: var(--ink); }
+
+  .wax-seal {
+    position: absolute;
+    top: -12px;
+    right: 14px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    z-index: 2;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    border: 2px solid rgba(255,255,255,0.3);
+  }
+
+  /* Modal */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(44,31,20,0.55);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-backdrop.open { display: flex; }
+
+  .modal {
+    background: var(--cream);
+    border: 1px solid var(--tan);
+    border-radius: 10px;
+    padding: 1.75rem;
+    width: min(420px, 92vw);
+    box-shadow: 0 8px 32px rgba(44,31,20,0.25);
+  }
+
+  .modal h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    color: var(--dark-brown);
+    margin-bottom: 0.25rem;
+  }
+
+  .modal p.sub {
+    font-size: 0.8rem;
+    color: var(--brown);
+    margin-bottom: 1.25rem;
+  }
+
+  .field {
+    margin-bottom: 1rem;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brown);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+
+  .field input, .field textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--tan);
+    border-radius: 5px;
+    background: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .field input:focus, .field textarea:focus { border-color: var(--brown); }
+
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 1.25rem;
+  }
+
+  .modal-actions button {
+    flex: 1;
+    padding: 9px 0;
+    border-radius: 5px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--tan);
+    background: var(--parchment);
+    color: var(--brown);
+    transition: background 0.15s;
+  }
+
+  .modal-actions button.confirm {
+    background: var(--dark-brown);
+    color: var(--cream);
+    border-color: var(--dark-brown);
+  }
+
+  .modal-actions button:hover { opacity: 0.85; }
+
+  .history-log {
+    max-height: 130px;
+    overflow-y: auto;
+    border-top: 1px solid var(--tan);
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+  }
+
+  .history-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    padding: 3px 0;
+    color: var(--brown);
+    border-bottom: 1px dashed rgba(139,111,71,0.2);
+  }
+
+  .history-item:last-child { border-bottom: none; }
+  .history-item .amount { color: var(--red-wax); font-weight: 500; }
+  .history-item .amount.refund { color: var(--sage); }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--dark-brown);
+    color: var(--cream);
+    padding: 0.6rem 1.4rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    transition: transform 0.3s ease;
+    z-index: 200;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .stamp {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    width: 36px;
+    height: 36px;
+    border: 2px dashed var(--tan);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    opacity: 0.6;
+  }
+
+  .add-expense-link {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brown);
+    opacity: 0.6;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>My Envelopes</h1>
+  <p>Monthly Budget</p>
+  <div class="month-label" id="month-label"></div>
+</header>
+
+<div class="summary-bar">
+  <div class="summary-item">
+    <span class="label">Total Budget</span>
+    <span class="val" id="sum-budget">$0</span>
+  </div>
+  <div class="summary-item">
+    <span class="label">Spent</span>
+    <span class="val spent" id="sum-spent">$0</span>
+  </div>
+  <div class="summary-item">
+    <span class="label">Remaining</span>
+    <span class="val left" id="sum-remaining">$0</span>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h2 id="modal-title">Envelope</h2>
+    <p class="sub" id="modal-sub"></p>
+    <div id="modal-body"></div>
+    <div class="modal-actions" id="modal-actions"></div>
+    <div class="history-log" id="modal-history" style="display:none"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ENVELOPES = [
+  { id: 'groceries',   label: 'Groceries',           icon: '🛒', color: '#6B7C5C', seal: '#8B2E2E' },
+  { id: 'eating_out',  label: 'Eating Out',           icon: '🍽️', color: '#8B6F47', seal: '#4A3728' },
+  { id: 'rent',        label: 'Rent',                 icon: '🏠', color: '#4A3728', seal: '#6B7C5C' },
+  { id: 'train',       label: 'Train',                icon: '🚆', color: '#3D5A80', seal: '#8B6F47' },
+  { id: 'utilities',   label: 'Utilities & Internet', icon: '💡', color: '#6B5A2E', seal: '#3D5A80' },
+  { id: 'investing',   label: 'Investing',            icon: '📈', color: '#2E5A40', seal: '#8B2E2E' },
+  { id: 'uber',        label: 'Uber / Lyft',          icon: '🚗', color: '#5A3D5A', seal: '#2E5A40' },
+  { id: 'clothing',    label: 'Clothing',             icon: '👗', color: '#8B4A5A', seal: '#5A3D5A' },
+  { id: 'drinks',      label: 'Drinks',               icon: '🍷', color: '#7A2E3D', seal: '#8B4A5A' },
+  { id: 'fun',         label: 'Fun Money',            icon: '✨', color: '#5A4A2E', seal: '#7A2E3D' },
+];
+
+const KEY = 'envelope_budget_v2';
+let state = load();
+
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if (s && s.envelopes) return s;
+  } catch(e) {}
+  return {
+    envelopes: Object.fromEntries(ENVELOPES.map(e => [e.id, { budget: 0, spent: 0, history: [] }]))
+  };
+}
+
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+
+function fmt(n) { return '$' + Math.abs(n).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+
+function getColor(remaining, budget) {
+  if (budget === 0) return 'good';
+  const pct = remaining / budget;
+  if (pct <= 0.2) return 'low';
+  if (pct <= 0.5) return 'medium';
+  return 'good';
+}
+
+function updateSummary() {
+  let totalBudget = 0, totalSpent = 0;
+  ENVELOPES.forEach(e => {
+    const d = state.envelopes[e.id];
+    totalBudget += d.budget;
+    totalSpent += d.spent;
+  });
+  document.getElementById('sum-budget').textContent = fmt(totalBudget);
+  document.getElementById('sum-spent').textContent = fmt(totalSpent);
+  const rem = totalBudget - totalSpent;
+  document.getElementById('sum-remaining').textContent = fmt(rem);
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+
+  ENVELOPES.forEach(env => {
+    const d = state.envelopes[env.id];
+    const remaining = d.budget - d.spent;
+    const pct = d.budget > 0 ? Math.min(1, Math.max(0, remaining / d.budget)) : 1;
+    const colorClass = getColor(remaining, d.budget);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'envelope-wrap';
+
+    const flapColor = env.color;
+    const flapLight = lighten(env.color, 0.25);
+
+    wrap.innerHTML = `
+      <div class="envelope">
+        <div class="envelope-flap">
+          <svg viewBox="0 0 260 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <rect width="260" height="80" fill="${flapColor}" rx="4"/>
+            <polygon points="0,0 260,0 130,52" fill="${flapLight}" opacity="0.55"/>
+            <line x1="0" y1="0" x2="130" y2="52" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+            <line x1="260" y1="0" x2="130" y2="52" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          </svg>
+          <div class="stamp">${env.icon}</div>
+        </div>
+        <div class="wax-seal" style="background:${env.seal}; color:#F5F0E8;">✉</div>
+        <div class="envelope-body">
+          <div class="envelope-category">
+            <span>${env.label}</span>
+          </div>
+          <div class="budget-display">
+            <span class="budget-remaining ${colorClass}">${fmt(remaining)}</span>
+            <span class="budget-of">of ${fmt(d.budget)}</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill ${colorClass}" style="width:${(pct*100).toFixed(1)}%"></div>
+          </div>
+          <div class="envelope-actions">
+            <button class="btn-action" onclick="openSet('${env.id}')">Set Budget</button>
+            <button class="btn-action primary" onclick="openSpend('${env.id}')">Add Expense</button>
+          </div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(wrap);
+  });
+
+  updateSummary();
+}
+
+function lighten(hex, amt) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.min(255, ((n >> 16) & 0xFF) + Math.round(255 * amt));
+  const g = Math.min(255, ((n >> 8) & 0xFF) + Math.round(255 * amt));
+  const b = Math.min(255, (n & 0xFF) + Math.round(255 * amt));
+  return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+}
+
+let currentEnv = null;
+
+function openSet(id) {
+  currentEnv = id;
+  const env = ENVELOPES.find(e => e.id === id);
+  const d = state.envelopes[id];
+  setModal(
+    `Set Budget — ${env.label}`,
+    `Current budget: ${fmt(d.budget)}`,
+    `<div class="field"><label>Monthly Budget ($)</label><input type="number" id="modal-input" placeholder="0.00" value="${d.budget || ''}" min="0" step="0.01" /></div>`,
+    [
+      { label: 'Cancel', cls: '', action: closeModal },
+      { label: 'Save', cls: 'confirm', action: confirmSet }
+    ],
+    null
+  );
+}
+
+function openSpend(id) {
+  currentEnv = id;
+  const env = ENVELOPES.find(e => e.id === id);
+  const d = state.envelopes[id];
+  const remaining = d.budget - d.spent;
+  setModal(
+    `${env.icon} ${env.label}`,
+    `Remaining: ${fmt(remaining)}`,
+    `<div class="field"><label>Amount ($)</label><input type="number" id="modal-input" placeholder="0.00" min="0.01" step="0.01" /></div>
+     <div class="field"><label>Note (optional)</label><input type="text" id="modal-note" placeholder="e.g. Whole Foods run" /></div>`,
+    [
+      { label: 'Cancel', cls: '', action: closeModal },
+      { label: 'Add Expense', cls: 'confirm', action: confirmSpend }
+    ],
+    d.history
+  );
+}
+
+function setModal(title, sub, bodyHTML, actions, history) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-sub').textContent = sub;
+  document.getElementById('modal-body').innerHTML = bodyHTML;
+
+  const actDiv = document.getElementById('modal-actions');
+  actDiv.innerHTML = '';
+  actions.forEach(a => {
+    const btn = document.createElement('button');
+    btn.textContent = a.label;
+    btn.className = a.cls;
+    btn.onclick = a.action;
+    actDiv.appendChild(btn);
+  });
+
+  const histDiv = document.getElementById('modal-history');
+  if (history && history.length > 0) {
+    histDiv.style.display = 'block';
+    histDiv.innerHTML = history.slice().reverse().map(h =>
+      `<div class="history-item">
+        <span>${h.note || 'Expense'} <span style="opacity:0.5;font-size:0.7rem">${h.date}</span></span>
+        <span class="amount ${h.amount < 0 ? 'refund' : ''}">${h.amount < 0 ? '+' : '-'}${fmt(Math.abs(h.amount))}</span>
+      </div>`
+    ).join('');
+  } else {
+    histDiv.style.display = 'none';
+    histDiv.innerHTML = '';
+  }
+
+  document.getElementById('modal').classList.add('open');
+  setTimeout(() => { const inp = document.getElementById('modal-input'); if (inp) inp.focus(); }, 50);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  currentEnv = null;
+}
+
+function confirmSet() {
+  const val = parseFloat(document.getElementById('modal-input').value);
+  if (isNaN(val) || val < 0) { showToast('Please enter a valid amount.'); return; }
+  state.envelopes[currentEnv].budget = Math.round(val * 100) / 100;
+  save(); renderGrid(); closeModal();
+  showToast('Budget updated!');
+}
+
+function confirmSpend() {
+  const val = parseFloat(document.getElementById('modal-input').value);
+  if (isNaN(val) || val <= 0) { showToast('Please enter a valid amount.'); return; }
+  const note = (document.getElementById('modal-note').value || '').trim();
+  const amount = Math.round(val * 100) / 100;
+  state.envelopes[currentEnv].spent = Math.round((state.envelopes[currentEnv].spent + amount) * 100) / 100;
+  state.envelopes[currentEnv].history.push({
+    amount,
+    note: note || 'Expense',
+    date: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'})
+  });
+  save(); renderGrid(); closeModal();
+  showToast('Expense logged!');
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function setMonthLabel() {
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const now = new Date();
+  document.getElementById('month-label').textContent = `${months[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+setMonthLabel();
+renderGrid();
+</script>
+</body>
+</html>
