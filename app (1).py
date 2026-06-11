@@ -1,0 +1,16 @@
+import streamlit as st
+import pathlib
+
+st.set_page_config(page_title="Envelope Budget", page_icon="✉️", layout="wide")
+
+# Hide Streamlit chrome so only the app shows
+st.markdown("""
+<style>
+  #MainMenu, header, footer { display: none !important; }
+  .block-container { padding: 0 !important; max-width: 100% !important; }
+  iframe { border: none; }
+</style>
+""", unsafe_allow_html=True)
+
+html = pathlib.Path("envelope-budget.html").read_text(encoding="utf-8")
+st.components.v1.html(html, height=1200, scrolling=True)
