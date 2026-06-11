@@ -12,5 +12,5 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-html = pathlib.Path("envelope-budget.html").read_text(encoding="utf-8")
+html = pathlib.Path("index.html").read_text(encoding="utf-8")
 st.components.v1.html(html, height=1200, scrolling=True)
